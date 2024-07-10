@@ -1,7 +1,8 @@
 {
-  "name": "Backend",
+  "name": "networkstore-backend",
   "scripts": {
-    "dev": "bun run --hot src/index.ts"
+    "dev": "bun run --hot src/index.ts",
+    "start": "bun run src/index.ts"
   },
   "dependencies": {
     "@prisma/client": "5.16.2",
