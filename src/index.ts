@@ -1,9 +1,11 @@
-import { Hono } from 'hono'
+import { Hono } from "hono";
+import productRoute from "./routes/product";
 
-const app = new Hono()
+const app = new Hono();
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+app.route("/product", productRoute);
 
-export default app
+const port = 3000;
+console.log(`Rest genres run in PORT: ${port}`);
+
+export default app;
