@@ -10,7 +10,7 @@ app.get("/", (c) => {
   });
 });
 
-app.route("/product", productRoute);
+app.route("/products", productRoute);
 
 const port = 3000;
 console.log(`Rest genres run in PORT: ${port}`);
