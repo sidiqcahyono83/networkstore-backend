@@ -6,7 +6,7 @@ const app = new Hono();
 app.get("/", (c) => {
   return c.json({
     message: "NetworkStore API",
-    URL: "/product",
+    URL: "/products",
   });
 });
 
