@@ -13,3 +13,7 @@ bun run dev
 ```
 
 open <http://localhost:3000>
+
+## ERD
+
+![image](/images/prisma-erd.svg)
