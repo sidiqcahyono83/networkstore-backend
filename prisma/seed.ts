@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { products } from "../src/data/products";
+
 const prisma = new PrismaClient();
 
 async function seed() {
@@ -9,6 +10,7 @@ async function seed() {
     });
   }
 }
+
 seed()
   .catch((e) => {
     console.log(e);
