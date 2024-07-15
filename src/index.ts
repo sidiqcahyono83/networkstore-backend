@@ -15,6 +15,6 @@ app.get("/", (c) => {
 app.route("/products", productRoute);
 
 const port = 3000;
-console.log(`Rest genres run in PORT: ${port}`);
+console.log(`Rest api run in PORT: ${port}`);
 
 export default app;
