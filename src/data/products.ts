@@ -1,18 +1,5 @@
-export type product = {
-  id: string;
-  name: string;
-  description: string | null;
-  price: number;
-  stock: number;
-  category: string;
-  imageUrl: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
 export const products = [
   {
-    id: "a ",
     name: "Routerboard CCR2004-1G-12S+2XS",
     description:
       "The Connectivity Router - your best companion when it comes to SFP, SFP+ and SFP28 management! 1, 10 and 25 Gbps ports in a single device to make your life easier",
@@ -24,7 +11,6 @@ export const products = [
     updatedAt: "2024-07-15T07:02:31.207Z",
   },
   {
-    id: "b",
     name: "RB4011iGS+RM",
     description:
       "10xGigabit port router with a Quad-core 1.4Ghz CPU 1GB RAM, SFP+ 10Gbps cage and desktop case with rack ears",

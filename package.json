@@ -15,9 +15,10 @@
   "dependencies": {
     "@prisma/client": "5.16.2",
     "hono": "^4.4.12",
-    "prisma": "^5.16.2"
+    "tsx": "^4.15.7"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "prisma": "^5.16.2"
   }
 }
