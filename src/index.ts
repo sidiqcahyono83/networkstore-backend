@@ -1,8 +1,10 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import productRoute from "./routes/product";
 
 const app = new Hono();
 
+app.use("/*", cors());
 app.get("/", (c) => {
   return c.json({
     message: "NetworkStore API",

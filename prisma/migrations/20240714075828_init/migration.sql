@@ -1,16 +1,17 @@
-/*
-  Warnings:
+-- CreateTable
+CREATE TABLE "Product" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "price" INTEGER NOT NULL,
+    "stock" INTEGER NOT NULL,
+    "category" TEXT NOT NULL,
+    "imageUrl" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
-  - Added the required column `category` to the `Product` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `stock` to the `Product` table without a default value. This is not possible if the table is not empty.
-
-*/
--- AlterTable
-ALTER TABLE "Product" ADD COLUMN     "category" TEXT NOT NULL,
-ADD COLUMN     "imageUrl" TEXT,
-ADD COLUMN     "stock" INTEGER NOT NULL,
-ALTER COLUMN "name" SET DATA TYPE TEXT,
-ALTER COLUMN "description" DROP NOT NULL;
+    CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "User" (
