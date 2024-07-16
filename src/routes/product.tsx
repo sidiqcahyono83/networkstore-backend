@@ -5,7 +5,7 @@ export const app = new Hono();
 
 app.get("/", async (c) => {
   try {
-    const allProduct = await prisma.product.findMany({});
+    const allProduct = await prisma.product.findMany();
     return c.json(
       {
         success: true,
