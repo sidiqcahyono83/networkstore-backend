@@ -4,12 +4,12 @@ import productRoute from "./routes/product";
 
 const app = new Hono();
 
-app.use("/*", cors());
+app.use("*", cors());
 app.get("/", (c) => {
-  return c.json({
-    message: "NetworkStore API",
-    URL: "/products",
-  });
+	return c.json({
+		message: "NetworkStore API",
+		URL: "/products",
+	});
 });
 
 app.route("/products", productRoute);
