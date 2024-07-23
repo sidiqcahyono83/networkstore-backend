@@ -5,7 +5,12 @@ export const app = new Hono();
 
 app.get("/", async (c) => {
 	try {
-		const allShoppingCartItems = await prisma.shoppingCartItem.findMany();
+		const allShoppingCartItems = await prisma.shoppingCartItem.findMany({
+			include: {
+				cart: true,
+				product: true,
+			},
+		});
 		return c.json(
 			{
 				success: true,

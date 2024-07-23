@@ -8,15 +8,19 @@ datasource db {
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  price       Int
-  stock       Int
-  category    String
-  imageUrl    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                 String            @id @default(cuid())
+  name               String
+  description        String?
+  price              Int
+  stock              Int
+  category           String
+  imageUrl           String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  ShoppingCartItem   ShoppingCartItem? @relation(fields: [shoppingCartItemId], references: [id])
+  shoppingCartItemId String?
+  ShoppingCart       ShoppingCart?     @relation(fields: [shoppingCartId], references: [id])
+  shoppingCartId     String?
 }
 
 model User {
@@ -38,10 +42,11 @@ model ShoppingCart {
   id         String             @id @default(cuid())
   user       User               @relation(fields: [username], references: [id])
   username   String             @unique
-  items      ShoppingCartItem[]
+  products   Product[]
   totalPrice Float
   createdAt  DateTime           @default(now())
   updatedAt  DateTime           @updatedAt
+  items      ShoppingCartItem[]
 }
 
 model ShoppingCartItem {
@@ -51,4 +56,5 @@ model ShoppingCartItem {
   quantity  Int
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
+  Product   Product[]
 }
