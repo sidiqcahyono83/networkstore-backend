@@ -36,8 +36,8 @@ model User {
 
 model ShoppingCart {
   id         String             @id @default(cuid())
-  user       User               @relation(fields: [userId], references: [id])
-  userId     String             @unique
+  user       User               @relation(fields: [username], references: [id])
+  username   String             @unique
   items      ShoppingCartItem[]
   totalPrice Float
   createdAt  DateTime           @default(now())
