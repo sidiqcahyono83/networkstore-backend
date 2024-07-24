@@ -11,7 +11,9 @@ app.use("*", cors());
 app.get("/", (c) => {
 	return c.json({
 		message: "NetworkStore API",
-		URL: "/products, /users, /cart",
+		products_URL: "/products",
+		users_URL: "/users",
+		cart_URL: "/cart",
 	});
 });
 
