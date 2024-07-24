@@ -7,24 +7,51 @@ app.get("/", async (c) => {
 	try {
 		const allShoppingCart = await prisma.shoppingCart.findMany({
 			include: {
-				user: true,
-				ShoppingCartItems: true,
-				products: true,
+				items: {
+					include: {
+						product: true,
+					},
+				},
 			},
 		});
+
+		const cartsWithTotalPrice = allShoppingCart.map((cart) => {
+			const totalPrice = cart.items.reduce(
+				(
+					sum: number,
+					item: { quantity: number; product: { price: number } }
+				) => {
+					return sum + item.quantity * item.product.price;
+				},
+				0
+			);
+
+			return {
+				...cart,
+				totalPrice,
+			};
+		});
+
 		return c.json(
 			{
 				success: true,
-				message: "List data ShopingCart",
-				data: allShoppingCart,
+				message: "List data ShoppingCart",
+				data: cartsWithTotalPrice,
 			},
 			200
 		);
 	} catch (error) {
-		console.error(`Error get ShopingCart : ${error}`);
+		console.error(`Error get ShoppingCart : ${error}`);
+		return c.json(
+			{
+				success: false,
+				message: "Error retrieving shopping cart data",
+				error: (error as Error).message,
+			},
+			500
+		);
 	}
 });
-
 app.get("/:id", async (c) => {
 	try {
 		const id = c.req.param("id");

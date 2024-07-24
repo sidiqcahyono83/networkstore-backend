@@ -8,7 +8,6 @@ app.get("/", async (c) => {
 		const allShoppingCartItems = await prisma.shoppingCartItem.findMany({
 			include: {
 				cart: true,
-				product: true,
 			},
 		});
 		return c.json(
