@@ -5,9 +5,12 @@ const prisma = new PrismaClient();
 
 async function seed() {
 	for (let product of products) {
-		await prisma.product.create({
-			data: product,
+		const newProductSeed = await prisma.product.upsert({
+			where: { name: product.name },
+			update: product,
+			create: product,
 		});
+		console.log(`Product : ${newProductSeed.name}`);
 	}
 }
 

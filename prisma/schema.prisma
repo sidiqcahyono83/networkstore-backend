@@ -7,51 +7,73 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Product {
-  id          String             @id @default(cuid())
-  name        String
-  description String?
-  price       Int
-  stock       Int
-  category    String
-  imageUrl    String?
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  items       ShoppingCartItem[]
-}
-
 model User {
-  id          String         @id @default(cuid())
-  username    String         @unique
-  password    String
-  email       String         @unique
+  id       String    @id @default(cuid())
+  username String    @unique
+  Password Password?
+  email    String    @unique
+
+  cart ShoppingCart[]
+
   firstName   String?
   lastName    String?
   address     String?
   phoneNumber String?
-  isAdmin     Boolean        @default(false)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  cart        ShoppingCart[]
+
+  isAdmin Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Password {
+  id String @id @default(cuid())
+
+  hash   String
+  use    User   @relation(fields: [userId], references: [id])
+  userId String @unique
+}
+
+model Product {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  price       Int
+  stock       Int
+
+  category String
+  imageUrl String?
+
+  ites ShoppingCartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ShoppingCart {
-  id         String             @id @default(cuid())
-  totalPrice Float              @default(0)
-  createdAt  DateTime           @default(now())
-  updatedAt  DateTime           @updatedAt
-  items      ShoppingCartItem[]
-  User       User?              @relation(fields: [userId], references: [id])
-  userId     String?
+  id         String @id @default(cuid())
+  totalPrice Float  @default(0)
+
+  items ShoppingCartItem[]
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ShoppingCartItem {
-  id        String       @id @default(cuid())
-  cart      ShoppingCart @relation(fields: [cartId], references: [id])
-  cartId    String
-  product   Product      @relation(fields: [productId], references: [id])
+  id String @id @default(cuid())
+
+  cart   ShoppingCart @relation(fields: [cartId], references: [id])
+  cartId String
+
+  product   Product @relation(fields: [productId], references: [id])
   productId String
-  quantity  Int          @default(1)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+
+  quantity Int @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

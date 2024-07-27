@@ -26,7 +26,7 @@ app.post("/", async (c) => {
 		const newUser = await prisma.user.create({
 			data: {
 				username: String(body.username),
-				password: String(body.password),
+
 				email: String(body.email),
 			},
 		});
@@ -84,7 +84,6 @@ app.put("/:id", async (c) => {
 			where: { id },
 			data: {
 				username: String(body.username),
-				password: String(body.password),
 				email: String(body.email),
 				firstName: String(body.firstName),
 				lastName: String(body.lastName),
