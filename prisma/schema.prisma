@@ -10,7 +10,7 @@ datasource db {
 model User {
   id       String    @id @default(cuid())
   username String    @unique
-  Password Password?
+  password Password?
   email    String    @unique
 
   cart ShoppingCart[]

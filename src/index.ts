@@ -2,6 +2,8 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import productRoute from "./routes/product";
 import userRoute from "./routes/user";
+import registerRoute from "./routes/register";
+import loginRoute from "./routes/login";
 import cartRoute from "./routes/shopingcart";
 import shoppingCartRoute from "./routes/shppingCartItem";
 
@@ -19,6 +21,8 @@ app.get("/", (c) => {
 
 app.route("/products", productRoute);
 app.route("/users", userRoute);
+app.route("/register", registerRoute);
+app.route("/login", loginRoute);
 app.route("/cart", cartRoute);
 app.route("/cartitem", shoppingCartRoute);
 

@@ -5,7 +5,9 @@ export const app = new Hono();
 
 app.get("/", async (c) => {
 	try {
-		const allUser = await prisma.user.findMany();
+		const allUser = await prisma.user.findMany({
+			include: { password: true },
+		});
 		return c.json(
 			{
 				success: true,
