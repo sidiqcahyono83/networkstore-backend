@@ -1,5 +1,7 @@
 import { Hono } from "hono";
 import prisma from "../lib/prisma";
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
 
 export const app = new Hono();
 
@@ -52,6 +54,27 @@ app.get("/", async (c) => {
 		);
 	}
 });
+
+// app.post('/shoppingcart') async (c) => {
+//   try {
+//     const { userId } = await c.req.json()
+
+//     const shoppingCart = await prisma.shoppingCart.create({
+//       data: {
+//         userId: userId || null,
+//       },
+//     })
+
+//     return c.json({
+//       message: 'ShoppingCart created successfully',
+//       shoppingCart,
+//     }, 201)
+//   } catch (error) {
+//     console.error(error)
+//     return c.json({ error: 'Failed to create ShoppingCart' }, 500)
+//   }
+// })
+
 app.get("/:id", async (c) => {
 	try {
 		const id = c.req.param("id");
