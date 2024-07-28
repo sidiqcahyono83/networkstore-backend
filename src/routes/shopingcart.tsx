@@ -2,113 +2,83 @@ import { Hono } from "hono";
 import prisma from "../lib/prisma";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
+import { checkUserToken } from "../midleware/cekUserToken";
 
 export const app = new Hono();
 
-app.get("/", async (c) => {
-	try {
-		const allShoppingCart = await prisma.shoppingCart.findMany({
-			include: {
+app.get("/shoppingCart", checkUserToken(), async (c) => {
+	const user = c.get("user");
+
+	const existingCart = await prisma.shoppingCart.findFirst({
+		where: { userId: user.id },
+		orderBy: { createdAt: "desc" },
+		include: { items: { include: { product: true } } },
+	});
+
+	if (!existingCart) {
+		const newCart = await prisma.shoppingCart.create({
+			data: { userId: user.id },
+			include: { items: { include: { product: true } } },
+		});
+
+		return c.json({
+			message: "Shopping shoppingCart data",
+			shoppingCart: newCart,
+		});
+	}
+
+	return c.json({
+		message: "Shopping shoppingCart data",
+		shoppingCart: existingCart,
+	});
+});
+
+app.post(
+	"/shoppingCart/items",
+	checkUserToken(),
+	zValidator(
+		"json",
+		z.object({
+			productId: z.string(),
+			quantity: z.number().min(1),
+		})
+	),
+	async (c) => {
+		const user = c.get("user");
+		const body = c.req.valid("json");
+
+		const existingCart = await prisma.shoppingCart.findFirst({
+			where: { userId: user.id },
+			orderBy: { createdAt: "desc" },
+		});
+
+		if (!existingCart) {
+			c.status(404);
+			return c.json({ message: "Shopping shoppingCart is unavailable" });
+		}
+
+		// FIXME: check existing product item before proceeding
+
+		const updatedCart = await prisma.shoppingCart.update({
+			where: { id: existingCart.id },
+			data: {
 				items: {
-					include: {
-						product: true,
+					create: {
+						productId: body.productId,
+						quantity: body.quantity,
 					},
 				},
 			},
-		});
-
-		const cartsWithTotalPrice = allShoppingCart.map((cart) => {
-			const totalPrice = cart.items.reduce(
-				(
-					sum: number,
-					item: { quantity: number; product: { price: number } }
-				) => {
-					return sum + item.quantity * item.product.price;
-				},
-				0
-			);
-
-			return {
-				...cart,
-				totalPrice,
-			};
-		});
-
-		return c.json(
-			{
-				success: true,
-				message: "List data ShoppingCart",
-				data: cartsWithTotalPrice,
+			include: {
+				items: true,
 			},
-			200
-		);
-	} catch (error) {
-		console.error(`Error get ShoppingCart : ${error}`);
-		return c.json(
-			{
-				success: false,
-				message: "Error retrieving shopping cart data",
-				error: (error as Error).message,
-			},
-			500
-		);
-	}
-});
-
-// app.post('/shoppingcart') async (c) => {
-//   try {
-//     const { userId } = await c.req.json()
-
-//     const shoppingCart = await prisma.shoppingCart.create({
-//       data: {
-//         userId: userId || null,
-//       },
-//     })
-
-//     return c.json({
-//       message: 'ShoppingCart created successfully',
-//       shoppingCart,
-//     }, 201)
-//   } catch (error) {
-//     console.error(error)
-//     return c.json({ error: 'Failed to create ShoppingCart' }, 500)
-//   }
-// })
-
-app.get("/:id", async (c) => {
-	try {
-		const id = c.req.param("id");
-		const ShoppingCart = await prisma.shoppingCart.findUnique({
-			where: { id: id },
 		});
-		if (!ShoppingCart) {
-			return c.json(
-				{
-					success: false,
-					message: `ShopingCart not found!`,
-				},
-				404
-			);
-		}
+
 		return c.json({
-			success: true,
-			message: `Detail ShopingCart ${ShoppingCart}`,
-			data: ShoppingCart,
+			message: "Product added to the shoppingCart",
+			shoppingCart: updatedCart,
 		});
-	} catch (error) {
-		console.error(`Error get ShopingCart by id : ${error}`);
 	}
-});
-
-app.delete("/:id", async (c) => {
-	const id = c.req.param("id");
-	const ShoppingCart = await prisma.shoppingCart.delete({
-		where: { id: id },
-	});
-	if (!id) {
-		return c.json({ message: "users Not Found" });
-	}
-	return c.json(`ShoppingCart by name ${ShoppingCart} deleted`);
-});
+);
 
 export default app;

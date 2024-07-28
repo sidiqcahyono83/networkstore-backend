@@ -50,7 +50,7 @@ app.post("/", async (c) => {
 	}
 });
 
-app.get("/:id", async (c) => {
+app.get("/:username", async (c) => {
 	try {
 		const id = c.req.param("id");
 		const product = await prisma.product.findUnique({
@@ -75,7 +75,7 @@ app.get("/:id", async (c) => {
 	}
 });
 
-app.delete("/:id", async (c) => {
+app.delete("/:username", async (c) => {
 	const id = c.req.param("id");
 	const product = await prisma.product.delete({
 		where: { id: id },
@@ -86,7 +86,7 @@ app.delete("/:id", async (c) => {
 	return c.json(`product by name ${product.name} deleted`);
 });
 
-app.put("/:id", async (c) => {
+app.put("/:username", async (c) => {
 	try {
 		const id = c.req.param("id");
 		const body = await c.req.json();

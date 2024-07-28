@@ -2,20 +2,11 @@ import { Hono } from "hono";
 import prisma from "../lib/prisma";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { hashPassword, verifyPassword } from "../lib/password";
+import { verifyPassword } from "../lib/password";
 import { createToken } from "../lib/jwt";
+import { checkUserToken } from "../midleware/cekUserToken";
 
 export const app = new Hono();
-
-type Bindings = {
-	TOKEN: string;
-};
-
-type Variables = {
-	user: {
-		id: string;
-	};
-};
 
 app.post(
 	"/auth",
@@ -71,5 +62,51 @@ app.post(
 		});
 	}
 );
+
+app.get("/auth/me", checkUserToken(), async (c) => {
+	const userData = await prisma.user.findUnique({
+		where: { id: user.id },
+	});
+
+	return c.json({
+		message: "User data",
+		user: userData,
+	});
+});
+
+app.get("/auth/logout", checkUserToken(), async (c) => {
+	// Note: might be unnecessary since this is token-based auth
+	// We can just remove the token on the client or frontend
+	return c.json({
+		message: "Logout",
+	});
+});
+
+// app.get("/cart", checkUserToken(), async (c) => {
+// 	const user = c.get("user");
+
+// 	const existingCart = await prisma.shoppingCart.findFirst({
+// 		where: { userId: user.id },
+// 		orderBy: { createdAt: "desc" },
+// 		include: { items: { include: { product: true } } },
+// 	});
+
+// 	if (!existingCart) {
+// 		const newCart = await prisma.shoppingCart.create({
+// 			data: { userId: user.id },
+// 			include: { items: { include: { product: true } } },
+// 		});
+
+// 		return c.json({
+// 			message: "Shopping cart data",
+// 			cart: newCart,
+// 		});
+// 	}
+
+// 	return c.json({
+// 		message: "Shopping cart data",
+// 		cart: existingCart,
+// 	});
+// });
 
 export default app;

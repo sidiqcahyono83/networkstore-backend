@@ -6,7 +6,22 @@ export const app = new Hono();
 app.get("/", async (c) => {
 	try {
 		const allUser = await prisma.user.findMany({
-			include: { password: true },
+			select: {
+				id: true,
+				username: true,
+				createdAt: true,
+				updatedAt: true,
+				password: {
+					select: {
+						id: true,
+					},
+				},
+				cart: {
+					select: {
+						items: { include: { cart: true } },
+					},
+				},
+			},
 		});
 		return c.json(
 			{
@@ -39,11 +54,17 @@ app.post("/", async (c) => {
 	}
 });
 
-app.get("/:id", async (c) => {
+app.get("/:username", async (c) => {
 	try {
-		const id = c.req.param("id");
+		const username = c.req.param("username");
 		const user = await prisma.user.findUnique({
-			where: { id: id },
+			where: { username },
+			select: {
+				id: true,
+				username: true,
+				createdAt: true,
+				updatedAt: true,
+			},
 		});
 		if (!user) {
 			return c.json(
@@ -64,7 +85,7 @@ app.get("/:id", async (c) => {
 	}
 });
 
-app.delete("/:id", async (c) => {
+app.delete("/:username", async (c) => {
 	const id = c.req.param("id");
 	const user = await prisma.user.delete({
 		where: { id: id },
@@ -75,15 +96,15 @@ app.delete("/:id", async (c) => {
 	return c.json(`user by name ${user.username} deleted`);
 });
 
-app.put("/:id", async (c) => {
+app.put("/:username", async (c) => {
 	try {
-		const id = c.req.param("id");
+		const username = c.req.param("username");
 		const body = await c.req.json();
-		if (!id) {
+		if (!username) {
 			return c.json({ message: `user not found`, Status: 404 });
 		}
 		const newUser = await prisma.user.update({
-			where: { id },
+			where: { username },
 			data: {
 				username: String(body.username),
 				email: String(body.email),
