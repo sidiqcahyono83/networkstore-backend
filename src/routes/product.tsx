@@ -75,7 +75,7 @@ app.get("/:id", async (c) => {
 	}
 });
 
-app.delete("/:username", async (c) => {
+app.delete("/:id", async (c) => {
 	const id = c.req.param("id");
 	const product = await prisma.product.delete({
 		where: { id: id },
@@ -86,7 +86,7 @@ app.delete("/:username", async (c) => {
 	return c.json(`product by name ${product.name} deleted`);
 });
 
-app.put("/:username", async (c) => {
+app.put("/:id", async (c) => {
 	try {
 		const id = c.req.param("id");
 		const body = await c.req.json();
