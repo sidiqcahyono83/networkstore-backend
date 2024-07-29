@@ -64,6 +64,7 @@ app.post(
 );
 
 app.get("/auth/me", checkUserToken(), async (c) => {
+	const user = c.get("user");
 	const userData = await prisma.user.findUnique({
 		where: { id: user.id },
 	});
