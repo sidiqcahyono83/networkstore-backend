@@ -50,7 +50,7 @@ app.post("/", async (c) => {
 	}
 });
 
-app.get("/:username", async (c) => {
+app.get("/:id", async (c) => {
 	try {
 		const id = c.req.param("id");
 		const product = await prisma.product.findUnique({
