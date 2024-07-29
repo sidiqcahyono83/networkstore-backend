@@ -4,9 +4,19 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { checkUserToken } from "../midleware/cekUserToken";
 
-export const app = new Hono();
+const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-app.get("/shoppingCart", checkUserToken(), async (c) => {
+type Bindings = {
+	TOKEN: string;
+};
+
+type Variables = {
+	user: {
+		id: string;
+	};
+};
+
+app.get("/", checkUserToken(), async (c) => {
 	const user = c.get("user");
 
 	const existingCart = await prisma.shoppingCart.findFirst({

@@ -1,7 +1,20 @@
 import { Hono } from "hono";
 import prisma from "../lib/prisma";
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
+import { checkUserToken } from "../midleware/cekUserToken";
 
-export const app = new Hono();
+const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
+
+type Bindings = {
+	TOKEN: string;
+};
+
+type Variables = {
+	user: {
+		id: string;
+	};
+};
 
 app.get("/", async (c) => {
 	try {
@@ -23,88 +36,52 @@ app.get("/", async (c) => {
 	}
 });
 
-app.post("/", async (c) => {
-	try {
-		const body = await c.req.json();
+app.post(
+	"/items",
+	checkUserToken(),
+	zValidator(
+		"json",
+		z.object({
+			productId: z.string(),
+			quantity: z.number().min(1),
+		})
+	),
+	async (c) => {
+		const user = c.get("user");
+		const body = c.req.valid("json");
 
-		const newProduct = await prisma.product.create({
+		const existingCart = await prisma.shoppingCart.findFirst({
+			where: { userId: user.id },
+			orderBy: { createdAt: "desc" },
+		});
+
+		if (!existingCart) {
+			c.status(404);
+			return c.json({ message: "Shopping shoppingCart is unavailable" });
+		}
+
+		// FIXME: check existing product item before proceeding
+
+		const updatedCart = await prisma.shoppingCart.update({
+			where: { id: existingCart.id },
 			data: {
-				name: String(body.name),
-				description: String(body.description),
-				price: Number(body.price),
-				stock: Number(body.stock),
-				category: String(body.category),
-				imageUrl: String(body.imageUrl),
-				// ShoppingCartItem: {
-				//   connectOrCreate: ShoppingCartItemData,
-				// },
-			},
-		});
-
-		return c.json(newProduct);
-	} catch (error) {
-		console.error(`Error get product : ${error}`);
-	}
-});
-
-app.get("/:username", async (c) => {
-	try {
-		const id = c.req.param("id");
-		const product = await prisma.product.findUnique({
-			where: { id: id },
-		});
-		if (!product) {
-			return c.json(
-				{
-					success: false,
-					message: `product not found!`,
+				items: {
+					create: {
+						productId: body.productId,
+						quantity: body.quantity,
+					},
 				},
-				404
-			);
-		}
-		return c.json({
-			success: true,
-			message: `Detail product ${product.name}`,
-			data: product,
-		});
-	} catch (error) {
-		console.error(`Error get product by id : ${error}`);
-	}
-});
-
-app.delete("/:username", async (c) => {
-	const id = c.req.param("id");
-	const product = await prisma.product.delete({
-		where: { id: id },
-	});
-	if (!id) {
-		return c.json({ message: "products Not Found" });
-	}
-	return c.json(`product by name ${product.name} deleted`);
-});
-
-app.put("/:username", async (c) => {
-	try {
-		const id = c.req.param("id");
-		const body = await c.req.json();
-		if (!id) {
-			return c.json({ message: `product not found`, Status: 404 });
-		}
-		const newProduct = await prisma.product.update({
-			where: { id },
-			data: {
-				name: String(body.name),
-				description: String(body.description),
-				price: Number(body.price),
-				stock: Number(body.stock),
-				category: String(body.category),
-				imageUrl: String(body.imageUrl),
+			},
+			include: {
+				items: true,
 			},
 		});
-		return c.json(newProduct);
-	} catch (error) {
-		console.error(`Error product : ${error}`);
+
+		return c.json({
+			message: "Product added to the shoppingCart",
+			shoppingCart: updatedCart,
+		});
 	}
-});
+);
 
 export default app;
