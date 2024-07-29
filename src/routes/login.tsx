@@ -5,7 +5,6 @@ import { z } from "zod";
 import { verifyPassword } from "../lib/password";
 import { createToken } from "../lib/jwt";
 import { checkUserToken } from "../midleware/cekUserToken";
-import { useId } from "hono/jsx";
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
