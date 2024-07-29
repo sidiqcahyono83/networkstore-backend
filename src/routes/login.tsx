@@ -5,8 +5,19 @@ import { z } from "zod";
 import { verifyPassword } from "../lib/password";
 import { createToken } from "../lib/jwt";
 import { checkUserToken } from "../midleware/cekUserToken";
+import { useId } from "hono/jsx";
 
-export const app = new Hono();
+const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
+
+type Bindings = {
+	TOKEN: string;
+};
+
+type Variables = {
+	user: {
+		id: string;
+	};
+};
 
 app.post(
 	"/auth",
@@ -63,7 +74,7 @@ app.post(
 	}
 );
 
-app.get("/auth/me", checkUserToken(), async (c) => {
+app.get("/auth/me", checkUserToken(), async (c, next) => {
 	const user = c.get("user");
 	const userData = await prisma.user.findUnique({
 		where: { id: user.id },
@@ -72,12 +83,7 @@ app.get("/auth/me", checkUserToken(), async (c) => {
 			username: true,
 			createdAt: true,
 			updatedAt: true,
-			cart: {
-				select: {
-					id: true,
-					items: true,
-				},
-			},
+			cart: true,
 		},
 	});
 
@@ -94,32 +100,5 @@ app.get("/auth/logout", checkUserToken(), async (c) => {
 		message: "Logout",
 	});
 });
-
-// app.get("/cart", checkUserToken(), async (c) => {
-// 	const user = c.get("user");
-
-// 	const existingCart = await prisma.shoppingCart.findFirst({
-// 		where: { userId: user.id },
-// 		orderBy: { createdAt: "desc" },
-// 		include: { items: { include: { product: true } } },
-// 	});
-
-// 	if (!existingCart) {
-// 		const newCart = await prisma.shoppingCart.create({
-// 			data: { userId: user.id },
-// 			include: { items: { include: { product: true } } },
-// 		});
-
-// 		return c.json({
-// 			message: "Shopping cart data",
-// 			cart: newCart,
-// 		});
-// 	}
-
-// 	return c.json({
-// 		message: "Shopping cart data",
-// 		cart: existingCart,
-// 	});
-// });
 
 export default app;
