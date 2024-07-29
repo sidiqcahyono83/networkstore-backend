@@ -67,6 +67,18 @@ app.get("/auth/me", checkUserToken(), async (c) => {
 	const user = c.get("user");
 	const userData = await prisma.user.findUnique({
 		where: { id: user.id },
+		select: {
+			id: true,
+			username: true,
+			createdAt: true,
+			updatedAt: true,
+			cart: {
+				select: {
+					id: true,
+					items: true,
+				},
+			},
+		},
 	});
 
 	return c.json({
