@@ -11,81 +11,81 @@ const app = new Hono<HonoApp>();
  * GET /cart
  */
 app.get("/", checkUserToken(), async (c) => {
-  const user = c.get("user");
+	const user = c.get("user");
 
-  const existingCart = await prisma.shoppingCart.findFirst({
-    where: { userId: user.id },
-    orderBy: { createdAt: "desc" },
-    include: { items: { include: { product: true } } },
-  });
+	const existingCart = await prisma.shoppingCart.findFirst({
+		where: { userId: user.id },
+		orderBy: { createdAt: "desc" },
+		include: { items: { include: { product: true } } },
+	});
 
-  if (!existingCart) {
-    const newCart = await prisma.shoppingCart.create({
-      data: { userId: user.id },
-      include: { items: { include: { product: true } } },
-    });
+	if (!existingCart) {
+		const newCart = await prisma.shoppingCart.create({
+			data: { userId: user.id },
+			include: { items: { include: { product: true } } },
+		});
 
-    return c.json({
-      message: "Shopping shoppingCart data",
-      shoppingCart: newCart,
-    });
-  }
+		return c.json({
+			message: "Shopping shoppingCart data",
+			shoppingCart: newCart,
+		});
+	}
 
-  return c.json({
-    message: "Shopping shoppingCart data",
-    shoppingCart: existingCart,
-  });
+	return c.json({
+		message: "Shopping shoppingCart data",
+		shoppingCart: existingCart,
+	});
 });
 
 /**
  * POST /cart/items
  */
 app.post(
-  "/items",
-  checkUserToken(),
-  zValidator(
-    "json",
-    z.object({
-      productId: z.string(),
-      quantity: z.number().min(1),
-    })
-  ),
-  async (c) => {
-    const user = c.get("user");
-    const body = c.req.valid("json");
+	"/items",
+	checkUserToken(),
+	zValidator(
+		"json",
+		z.object({
+			productId: z.string(),
+			quantity: z.number().min(1),
+		})
+	),
+	async (c) => {
+		const user = c.get("user");
+		const body = c.req.valid("json");
 
-    const existingCart = await prisma.shoppingCart.findFirst({
-      where: { userId: user.id },
-      orderBy: { createdAt: "desc" },
-    });
+		const existingCart = await prisma.shoppingCart.findFirst({
+			where: { userId: user.id },
+			orderBy: { createdAt: "desc" },
+		});
 
-    if (!existingCart) {
-      c.status(404);
-      return c.json({ message: "Shopping shoppingCart is unavailable" });
-    }
+		if (!existingCart) {
+			c.status(404);
+			return c.json({ message: "Shopping shoppingCart is unavailable" });
+		}
 
-    // FIXME: check existing product item before proceeding
+		// FIXME: check existing product item before proceeding
 
-    const updatedCart = await prisma.shoppingCart.update({
-      where: { id: existingCart.id },
-      data: {
-        items: {
-          create: {
-            productId: body.productId,
-            quantity: body.quantity,
-          },
-        },
-      },
-      include: {
-        items: true,
-      },
-    });
+		const updatedCart = await prisma.shoppingCart.update({
+			where: { id: existingCart.id },
+			data: {
+				items: {
+					create: {
+						productId: body.productId,
+						quantity: body.quantity,
+					},
+				},
+			},
+			include: {
+				items: true,
+			},
+		});
 
-    return c.json({
-      message: "Product added to the shoppingCart",
-      shoppingCart: updatedCart,
-    });
-  }
+		return c.json({
+			message: "Product added to the shoppingCart",
+			shoppingCart: updatedCart,
+		});
+	}
 );
 
 export default app;

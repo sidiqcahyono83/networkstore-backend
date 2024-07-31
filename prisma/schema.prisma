@@ -13,7 +13,7 @@ model User {
   password Password?
   email    String    @unique
 
-  cart ShoppingCart[]
+  cart Cart[]
 
   firstName   String?
   lastName    String?
@@ -44,29 +44,31 @@ model Product {
   category String
   imageUrl String?
 
-  ites ShoppingCartItem[]
+  ites CartItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model ShoppingCart {
+model Cart {
   id         String @id @default(cuid())
   totalPrice Float  @default(0)
 
-  items ShoppingCartItem[]
+  items CartItem[]
 
   User   User?   @relation(fields: [userId], references: [id])
   userId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("ShoppingCart")
 }
 
-model ShoppingCartItem {
+model CartItem {
   id String @id @default(cuid())
 
-  cart   ShoppingCart @relation(fields: [cartId], references: [id])
+  cart   Cart   @relation(fields: [cartId], references: [id])
   cartId String
 
   product   Product @relation(fields: [productId], references: [id])
@@ -76,4 +78,6 @@ model ShoppingCartItem {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("ShoppingCartItem")
 }
