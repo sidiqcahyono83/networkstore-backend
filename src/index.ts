@@ -6,16 +6,16 @@ import userRoute from "./routes/user";
 import registerRoute from "./routes/register";
 import loginRoute from "./routes/login";
 import meRoute from "./routes/me";
-import cartRoute from "./routes/shopingcart";
+import cartRoute from "./routes/cart";
 
 type Bindings = {
-  TOKEN: string;
+	TOKEN: string;
 };
 
 type Variables = {
-  user: {
-    id: string;
-  };
+	user: {
+		id: string;
+	};
 };
 
 export type HonoApp = { Bindings: Bindings; Variables: Variables };
@@ -24,12 +24,12 @@ const app = new Hono<HonoApp>();
 
 app.use("*", cors());
 app.get("/", (c) => {
-  return c.json({
-    message: "NetworkStore API",
-    productsURL: "/products",
-    usersURL: "/users",
-    cartURL: "/cart",
-  });
+	return c.json({
+		message: "NetworkStore API",
+		productsURL: "/products",
+		usersURL: "/users",
+		cartURL: "/cart",
+	});
 });
 
 app.route("/products", productRoute);

@@ -13,14 +13,14 @@ const app = new Hono<HonoApp>();
 app.get("/", checkUserToken(), async (c) => {
 	const user = c.get("user");
 
-	const existingCart = await prisma.shoppingCart.findFirst({
+	const existingCart = await prisma.cart.findFirst({
 		where: { userId: user.id },
 		orderBy: { createdAt: "desc" },
 		include: { items: { include: { product: true } } },
 	});
 
 	if (!existingCart) {
-		const newCart = await prisma.shoppingCart.create({
+		const newCart = await prisma.cart.create({
 			data: { userId: user.id },
 			include: { items: { include: { product: true } } },
 		});
@@ -33,7 +33,7 @@ app.get("/", checkUserToken(), async (c) => {
 
 	return c.json({
 		message: "Shopping shoppingCart data",
-		shoppingCart: existingCart,
+		cart: existingCart,
 	});
 });
 
@@ -54,7 +54,7 @@ app.post(
 		const user = c.get("user");
 		const body = c.req.valid("json");
 
-		const existingCart = await prisma.shoppingCart.findFirst({
+		const existingCart = await prisma.cart.findFirst({
 			where: { userId: user.id },
 			orderBy: { createdAt: "desc" },
 		});
@@ -66,7 +66,7 @@ app.post(
 
 		// FIXME: check existing product item before proceeding
 
-		const updatedCart = await prisma.shoppingCart.update({
+		const updatedCart = await prisma.cart.update({
 			where: { id: existingCart.id },
 			data: {
 				items: {
@@ -83,7 +83,7 @@ app.post(
 
 		return c.json({
 			message: "Product added to the shoppingCart",
-			shoppingCart: updatedCart,
+			cart: updatedCart,
 		});
 	}
 );

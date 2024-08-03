@@ -62,7 +62,7 @@ model Cart {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("ShoppingCart")
+  @@map("Cart")
 }
 
 model CartItem {
@@ -79,5 +79,5 @@ model CartItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("ShoppingCartItem")
+  @@map("CartItem")
 }
