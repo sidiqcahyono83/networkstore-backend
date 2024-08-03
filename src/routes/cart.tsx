@@ -27,7 +27,7 @@ app.get("/", checkUserToken(), async (c) => {
 
 		return c.json({
 			message: "Shopping shoppingCart data",
-			shoppingCart: newCart,
+			cart: newCart,
 		});
 	}
 
