@@ -9,16 +9,10 @@ app.get("/", async (c) => {
       select: {
         id: true,
         username: true,
-        createdAt: true,
-        updatedAt: true,
+
         password: {
           select: {
             id: true,
-          },
-        },
-        cart: {
-          select: {
-            items: { include: { cart: true } },
           },
         },
       },
@@ -44,6 +38,8 @@ app.get("/:username", async (c) => {
       select: {
         id: true,
         username: true,
+        fullname: true,
+        address: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -89,11 +85,8 @@ app.put("/:username", async (c) => {
       where: { username },
       data: {
         username: String(body.username),
-        email: String(body.email),
-        firstName: String(body.firstName),
-        lastName: String(body.lastName),
+        fullname: String(body.fullname),
         address: String(body.address),
-        phoneNumber: String(body.phoneNumber),
       },
     });
     return c.json(newUser);

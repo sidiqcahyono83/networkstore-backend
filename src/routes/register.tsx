@@ -12,8 +12,8 @@ app.post(
     "json",
     z.object({
       username: z.string(),
-      email: z.string(),
       password: z.string(),
+      fullname: z.string(),
     })
   ),
   async (c) => {
@@ -23,7 +23,7 @@ app.post(
       const newUser = await prisma.user.create({
         data: {
           username: body.username,
-          email: body.email,
+          fullname: body.fullname,
           password: {
             create: {
               hash: await hashPassword(body.password),

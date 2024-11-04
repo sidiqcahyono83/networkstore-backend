@@ -3,81 +3,94 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id       String    @id @default(cuid())
-  username String    @unique
-  password Password?
-  email    String    @unique
-
-  cart Cart[]
-
-  firstName   String?
-  lastName    String?
+  id          String    @id @default(cuid())
+  username    String    @unique
+  password    Password?
+  fullname    String?
   address     String?
   phoneNumber String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  isAdmin Boolean @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  Area    Area?   @relation(fields: [areaId], references: [id])
+  areaId  String?
+  Modem   Modem?  @relation(fields: [modemId], references: [id])
+  modemId String?
 }
 
 model Password {
-  id String @id @default(cuid())
-
+  id     String @id @default(cuid())
   hash   String
   use    User   @relation(fields: [userId], references: [id])
   userId String @unique
 }
 
-model Product {
+model Customer {
   id          String  @id @default(cuid())
-  name        String
-  description String?
-  price       Int
-  stock       Int
-
-  category String
-  imageUrl String?
-
-  ites CartItem[]
+  fullname    String
+  address     String?
+  phonenumber String?
+  ontName     String?
+  redamanOlt  String?
+  diskon      Int     @default(0)
+  ppn         Int?    @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Paket     Paket?   @relation(fields: [paketId], references: [id])
+  paketId   String?
+  Area      Area?    @relation(fields: [areaId], references: [id])
+  areaId    String?
+  Odp       Odp?     @relation(fields: [odpId], references: [id])
+  odpId     String?
+  Modem     Modem?   @relation(fields: [modemId], references: [id])
+  modemId   String?
 }
 
-model Cart {
-  id         String @id @default(cuid())
-  totalPrice Float  @default(0)
-
-  items CartItem[]
-
-  User   User?   @relation(fields: [userId], references: [id])
-  userId String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("Cart")
+model Paket {
+  id        String     @id @default(cuid())
+  name      String
+  harga     Int
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  customer  Customer[]
 }
 
-model CartItem {
-  id String @id @default(cuid())
+model Area {
+  id        String     @id @default(cuid())
+  name      String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  customer  Customer[]
+  odp       Odp[]
+  user      User[]
+}
 
-  cart   Cart   @relation(fields: [cartId], references: [id])
-  cartId String
+model Odp {
+  id            String     @id @default(cuid())
+  name          String
+  rasio         String?
+  pasiveSpliter String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  customer      Customer[]
+  area          Area?      @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  areaId        String?
+}
 
-  product   Product @relation(fields: [productId], references: [id])
-  productId String
-
-  quantity Int @default(1)
+model Modem {
+  id     String @id @default(cuid())
+  name   String
+  serial String @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("CartItem")
+  orderBy  User[]
+  customer Customer[]
 }
