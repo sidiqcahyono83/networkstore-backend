@@ -17,10 +17,9 @@ model User {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  Area    Area?   @relation(fields: [areaId], references: [id])
-  areaId  String?
-  Modem   Modem?  @relation(fields: [modemId], references: [id])
-  modemId String?
+  Area Area[]
+
+  Modem Modem[]
 }
 
 model Password {
@@ -32,7 +31,8 @@ model Password {
 
 model Customer {
   id          String  @id @default(cuid())
-  fullname    String
+  username    String? @unique
+  fullname    String?
   address     String?
   phonenumber String?
   ontName     String?
@@ -42,13 +42,13 @@ model Customer {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Paket     Paket?   @relation(fields: [paketId], references: [id])
+  paket     Paket?   @relation(fields: [paketId], references: [id])
   paketId   String?
-  Area      Area?    @relation(fields: [areaId], references: [id])
+  area      Area?    @relation(fields: [areaId], references: [id])
   areaId    String?
-  Odp       Odp?     @relation(fields: [odpId], references: [id])
+  odp       Odp?     @relation(fields: [odpId], references: [id])
   odpId     String?
-  Modem     Modem?   @relation(fields: [modemId], references: [id])
+  modem     Modem?   @relation(fields: [modemId], references: [id])
   modemId   String?
 }
 

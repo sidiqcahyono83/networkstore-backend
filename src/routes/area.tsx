@@ -18,85 +18,82 @@ app.get("/", async (c) => {
   }
 });
 
-// app.post("/", async (c) => {
-//   try {
-//     const body = await c.req.json();
+app.post("/", async (c) => {
+  try {
+    const body = await c.req.json();
 
-//     const newProduct = await prisma.product.create({
-//       data: {
-//         name: String(body.name),
-//         description: String(body.description),
-//         price: Number(body.price),
-//         stock: Number(body.stock),
-//         category: String(body.category),
-//         imageUrl: String(body.imageUrl),
-//       },
-//     });
+    const newArea = await prisma.area.create({
+      data: {
+        name: String(body.name),
+      },
+    });
 
-//     return c.json(newProduct);
-//   } catch (error) {
-//     console.error(`Error get product : ${error}`);
-//   }
-// });
+    return c.json(newArea);
+  } catch (error) {
+    console.error(`Error get area : ${error}`);
+  }
+});
 
-// app.get("/:id", async (c) => {
-//   try {
-//     const id = c.req.param("id");
-//     const product = await prisma.product.findUnique({
-//       where: { id: id },
-//     });
-//     if (!product) {
-//       return c.json(
-//         {
-//           success: false,
-//           message: `product not found!`,
-//         },
-//         404
-//       );
-//     }
-//     return c.json({
-//       success: true,
-//       message: `Detail product ${product.name}`,
-//       data: product,
-//     });
-//   } catch (error) {
-//     console.error(`Error get product by id : ${error}`);
-//   }
-// });
+app.get("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const area = await prisma.area.findUnique({
+      where: { id: id },
+      include: {
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
+    });
+    if (!area) {
+      return c.json(
+        {
+          success: false,
+          message: `Area not found!`,
+        },
+        404
+      );
+    }
+    return c.json({
+      success: true,
+      message: `Detail Area ${area.name}`,
+      data: area,
+    });
+  } catch (error) {
+    console.error(`Error get product by id : ${error}`);
+  }
+});
 
-// app.delete("/:id", async (c) => {
-//   const id = c.req.param("id");
-//   const product = await prisma.product.delete({
-//     where: { id: id },
-//   });
-//   if (!id) {
-//     return c.json({ message: "products Not Found" });
-//   }
-//   return c.json(`product by name ${product.name} deleted`);
-// });
+app.delete("/:id", async (c) => {
+  const id = c.req.param("id");
+  const area = await prisma.area.delete({
+    where: { id: id },
+  });
+  if (!id) {
+    return c.json({ message: "Area Not Found" });
+  }
+  return c.json(`Area ${area.name} deleted`);
+});
 
-// app.put("/:id", async (c) => {
-//   try {
-//     const id = c.req.param("id");
-//     const body = await c.req.json();
-//     if (!id) {
-//       return c.json({ message: `product not found`, Status: 404 });
-//     }
-//     const newProduct = await prisma.product.update({
-//       where: { id },
-//       data: {
-//         name: String(body.name),
-//         description: String(body.description),
-//         price: Number(body.price),
-//         stock: Number(body.stock),
-//         category: String(body.category),
-//         imageUrl: String(body.imageUrl),
-//       },
-//     });
-//     return c.json(newProduct);
-//   } catch (error) {
-//     console.error(`Error product : ${error}`);
-//   }
-// });
+app.put("/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const body = await c.req.json();
+    if (!id) {
+      return c.json({ message: `product not found`, Status: 404 });
+    }
+    const newArea = await prisma.area.update({
+      where: { id },
+      data: {
+        name: String(body.name),
+      },
+    });
+    return c.json(newArea);
+  } catch (error) {
+    console.error(`Error Area : ${error}`);
+  }
+});
 
 export default app;

@@ -8,6 +8,7 @@ import loginRoute from "./routes/login";
 import meRoute from "./routes/me";
 import cartRoute from "./routes/cart";
 import areaRoute from "./routes/area";
+import customersRoute from "./routes/customer";
 
 type Bindings = {
   TOKEN: string;
@@ -30,6 +31,7 @@ app.get("/", (c) => {
     productsURL: "/products",
     usersURL: "/users",
     cartURL: "/cart",
+    customersUrl: "/customers",
   });
 });
 
@@ -40,5 +42,6 @@ app.route("/auth/login", loginRoute);
 app.route("/auth/me", meRoute);
 app.route("/cart", cartRoute);
 app.route("/area", areaRoute);
+app.route("/customers", customersRoute);
 
 export default app;

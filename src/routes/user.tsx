@@ -9,10 +9,12 @@ app.get("/", async (c) => {
       select: {
         id: true,
         username: true,
-
-        password: {
+        fullname: true,
+        phoneNumber: true,
+        address: true,
+        Area: {
           select: {
-            id: true,
+            name: true,
           },
         },
       },
@@ -30,36 +32,54 @@ app.get("/", async (c) => {
   }
 });
 
-app.get("/:username", async (c) => {
+app.get("/area/:areaName", async (c) => {
   try {
-    const username = c.req.param("username");
-    const user = await prisma.user.findUnique({
-      where: { username },
+    // Ambil nama area dari parameter permintaan
+    const areaName = c.req.param("areaName");
+
+    // Fetch users who belong to the specified area
+    const users = await prisma.user.findMany({
+      where: {
+        Area: {
+          some: {
+            name: areaName, // Gunakan some untuk menyaring berdasarkan nama area
+          },
+        },
+      },
       select: {
         id: true,
         username: true,
         fullname: true,
+        phoneNumber: true,
         address: true,
-        createdAt: true,
-        updatedAt: true,
       },
     });
-    if (!user) {
+
+    // Periksa jika pengguna ditemukan
+    if (users.length === 0) {
       return c.json(
         {
           success: false,
-          message: `user not found!`,
+          message: `No users found in area: ${areaName}`,
         },
         404
       );
     }
+
+    // Kembalikan pengguna yang ditemukan
     return c.json({
       success: true,
-      message: `Detail user ${user.username}`,
-      data: user,
+      message: `Users in area: ${areaName}`,
+      data: users,
     });
   } catch (error) {
-    console.error(`Error get user by id : ${error}`);
+    return c.json(
+      {
+        success: false,
+        message: "An error occurred while fetching users",
+      },
+      500
+    );
   }
 });
 

@@ -16,7 +16,6 @@ app.get("/", checkUserToken(), async (c, next) => {
       username: true,
       createdAt: true,
       updatedAt: true,
-      cart: true,
     },
   });
 
