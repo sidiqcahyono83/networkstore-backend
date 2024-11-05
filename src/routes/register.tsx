@@ -6,6 +6,7 @@ import { hashPassword } from "../lib/password";
 
 export const app = new Hono();
 
+//POST Register
 app.post(
   "/",
   zValidator(

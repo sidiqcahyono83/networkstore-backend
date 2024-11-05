@@ -10,6 +10,7 @@ import { HonoApp } from "../index";
 
 const app = new Hono<HonoApp>();
 
+//auth/login
 app.post(
   "/",
   zValidator(
@@ -65,6 +66,7 @@ app.post(
   }
 );
 
+//auth/me
 app.get("/auth/me", checkUserToken(), async (c, next) => {
   const user = c.get("user");
   const userData = await prisma.user.findUnique({

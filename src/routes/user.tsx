@@ -1,8 +1,10 @@
 import { Hono } from "hono";
 import prisma from "../lib/prisma";
+import { hashPassword } from "../lib/password";
 
 export const app = new Hono();
 
+//GET User
 app.get("/", async (c) => {
   try {
     const allUser = await prisma.user.findMany({
@@ -32,6 +34,7 @@ app.get("/", async (c) => {
   }
 });
 
+//GET User by Area
 app.get("/area/:areaName", async (c) => {
   try {
     // Ambil nama area dari parameter permintaan
@@ -83,6 +86,29 @@ app.get("/area/:areaName", async (c) => {
   }
 });
 
+//POST User
+app.post("/", async (c) => {
+  try {
+    const body = await c.req.json();
+    const newUser = await prisma.user.create({
+      data: {
+        username: String(body.username),
+        fullname: String(body.fullname),
+        address: String(body.address),
+        password: {
+          create: {
+            hash: await hashPassword(body.password),
+          },
+        },
+      },
+    });
+    return c.json(newUser);
+  } catch (error) {
+    console.error(`Error user : ${error}`);
+  }
+});
+
+//DELETE User
 app.delete("/:username", async (c) => {
   const id = c.req.param("id");
   const user = await prisma.user.delete({
@@ -94,6 +120,7 @@ app.delete("/:username", async (c) => {
   return c.json(`user by name ${user.username} deleted`);
 });
 
+//PUT User
 app.put("/:username", async (c) => {
   try {
     const username = c.req.param("username");

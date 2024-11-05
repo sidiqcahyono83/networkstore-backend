@@ -2,15 +2,15 @@ import { Hono } from "hono";
 import prisma from "../lib/prisma";
 export const app = new Hono();
 
-//GET Area all
+//GET modem all
 app.get("/", async (c) => {
   try {
-    const allArea = await prisma.area.findMany();
+    const allModem = await prisma.modem.findMany();
     return c.json(
       {
         success: true,
-        message: "List data Area",
-        data: allArea,
+        message: "List data modem",
+        data: allModem,
       },
       200
     );
@@ -19,69 +19,68 @@ app.get("/", async (c) => {
   }
 });
 
-//POST Area
+//POST modem
 app.post("/", async (c) => {
   try {
     const body = await c.req.json();
 
-    const newArea = await prisma.area.create({
+    const newModem = await prisma.modem.create({
       data: {
         name: String(body.name),
+        serial: String(body.serial),
       },
     });
 
-    return c.json(newArea);
+    return c.json(newModem);
   } catch (error) {
-    console.error(`Error get area : ${error}`);
+    console.error(`Error get modem : ${error}`);
   }
 });
 
-//GET Area by ID
+//GET modem by ID
 app.get("/:id", async (c) => {
   try {
     const id = c.req.param("id");
-    const area = await prisma.area.findUnique({
+    const modem = await prisma.modem.findUnique({
       where: { id: id },
-      include: {
-        user: {
-          select: {
-            username: true,
-          },
-        },
+      select: {
+        id: true,
+        name: true,
+        serial: true,
       },
     });
-    if (!area) {
+    if (!modem) {
       return c.json(
         {
           success: false,
-          message: `Area not found!`,
+          message: `modem not found!`,
         },
         404
       );
     }
     return c.json({
       success: true,
-      message: `Detail Area ${area.name}`,
-      data: area,
+      message: `Detail modem ${modem.name}`,
+      data: modem,
     });
   } catch (error) {
     console.error(`Error get product by id : ${error}`);
   }
 });
 
-//DELETE Area
+//DELETE modem
 app.delete("/:id", async (c) => {
   const id = c.req.param("id");
-  const area = await prisma.area.delete({
+  const modem = await prisma.modem.delete({
     where: { id: id },
   });
   if (!id) {
-    return c.json({ message: "Area Not Found" });
+    return c.json({ message: "modem Not Found" });
   }
-  return c.json(`Area ${area.name} deleted`);
+  return c.json(`modem ${modem.name} deleted`);
 });
 
-//PUT Area
+//PUT modem
 app.put("/:id", async (c) => {
   try {
     const id = c.req.param("id");
@@ -89,15 +88,26 @@ app.put("/:id", async (c) => {
     if (!id) {
       return c.json({ message: `product not found`, Status: 404 });
     }
-    const newArea = await prisma.area.update({
+    const newModem = await prisma.modem.update({
       where: { id },
       data: {
         name: String(body.name),
+        serial: String(body.serial),
+        customer: {
+          connect: {
+            id: body.customerId,
+          },
+        },
+        orderBy: {
+          connect: {
+            id: body.orderById,
+          },
+        },
       },
     });
-    return c.json(newArea);
+    return c.json(newModem);
   } catch (error) {
-    console.error(`Error Area : ${error}`);
+    console.error(`Error modem : ${error}`);
   }
 });
 

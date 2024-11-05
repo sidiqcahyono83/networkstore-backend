@@ -6,6 +6,7 @@ import { HonoApp } from "../index";
 
 const app = new Hono<HonoApp>();
 
+//GET User
 app.get("/", checkUserToken(), async (c, next) => {
   const user = c.get("user");
 

@@ -6,7 +6,7 @@ import userRoute from "./routes/user";
 import registerRoute from "./routes/register";
 import loginRoute from "./routes/login";
 import meRoute from "./routes/me";
-import cartRoute from "./routes/cart";
+import pembayarantRoute from "./routes/pembayaran";
 import areaRoute from "./routes/area";
 import customersRoute from "./routes/customer";
 
@@ -28,20 +28,19 @@ app.use("*", cors());
 app.get("/", (c) => {
   return c.json({
     message: "NetworkStore API",
-    productsURL: "/products",
+    productsURL: "/customers",
     usersURL: "/users",
-    cartURL: "/cart",
+    cartURL: "/users/area/:areaName",
     customersUrl: "/customers",
   });
 });
 
-app.route("/products", productRoute);
 app.route("/users", userRoute);
 app.route("/auth/register", registerRoute);
 app.route("/auth/login", loginRoute);
 app.route("/auth/me", meRoute);
-app.route("/cart", cartRoute);
 app.route("/area", areaRoute);
 app.route("/customers", customersRoute);
+app.route("/pembayaran", pembayarantRoute);
 
 export default app;
