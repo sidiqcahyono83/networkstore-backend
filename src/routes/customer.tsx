@@ -1,10 +1,11 @@
 import { Hono } from "hono";
 import prisma from "../lib/prisma";
+import { checkUserToken } from "../midleware/cekUserToken";
 export const app = new Hono();
 
 //GET Customer All
 
-app.get("/", async (c) => {
+app.get("/", checkUserToken(),async (c) => {
   try {
     const result = await prisma.customer.findMany({
       include: {
