@@ -9,6 +9,7 @@ import meRoute from "./routes/me";
 import pembayarantRoute from "./routes/pembayaran";
 import areaRoute from "./routes/area";
 import customersRoute from "./routes/customer";
+import pppActiveRoute from "./routes/pppactive";
 
 type Bindings = {
   TOKEN: string;
@@ -42,5 +43,6 @@ app.route("/auth/me", meRoute);
 app.route("/area", areaRoute);
 app.route("/customers", customersRoute);
 app.route("/pembayaran", pembayarantRoute);
+app.route("/ppp", pppActiveRoute);
 
 export default app;
