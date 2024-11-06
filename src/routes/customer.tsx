@@ -5,7 +5,7 @@ export const app = new Hono();
 
 //GET Customer All
 
-app.get("/", checkUserToken(),async (c) => {
+app.get("/", checkUserToken(), async (c) => {
   try {
     const result = await prisma.customer.findMany({
       include: {
