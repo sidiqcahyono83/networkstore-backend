@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import prisma from "../lib/prisma";
 import { hashPassword } from "../lib/password";
+import { checkUserToken } from "../midleware/cekUserToken";
 
 export const app = new Hono();
 
@@ -29,6 +30,38 @@ app.get("/", async (c) => {
       },
       200
     );
+  } catch (error) {
+    console.error(`Error get User : ${error}`);
+  }
+});
+
+//GET USER BY USERNAME
+app.get("/:username", checkUserToken(), async (c) => {
+  try {
+    const username = c.req.param("username");
+    const user = await prisma.user.findUnique({
+      where: { username: username },
+      select: {
+        id: true,
+        username: true,
+        fullname: true,
+        address: true,
+        phoneNumber: true,
+        Area: {
+          select: {
+            id: true,
+            name: true,
+            _count: {
+              select: { customer: true },
+            },
+          },
+        },
+        _count: {
+          select: { Area: true },
+        },
+      },
+    });
+    return c.json(user);
   } catch (error) {
     console.error(`Error get User : ${error}`);
   }
