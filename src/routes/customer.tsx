@@ -34,7 +34,7 @@ app.get("/", checkUserToken(), async (c) => {
 app.get("/:area", async (c) => {
   try {
     const userAreaId = c.req.param("area");
-    const users = await prisma.customer.findMany({
+    const cusstomers = await prisma.customer.findMany({
       where: {
         area: {
           name: userAreaId,
@@ -52,7 +52,7 @@ app.get("/:area", async (c) => {
       },
     });
 
-    if (users.length === 0) {
+    if (cusstomers.length === 0) {
       return c.json(
         {
           success: false,
@@ -64,8 +64,11 @@ app.get("/:area", async (c) => {
 
     return c.json({
       success: true,
-      message: `Customer in area ${userAreaId} sejumlah ${users.length}`,
-      data: users,
+      message: `Customer in area ${userAreaId} sejumlah ${cusstomers.length}`,
+      data: cusstomers,
+      _count: {
+        customer: cusstomers.length,
+      },
     });
   } catch (error) {
     console.error(`Error getting users by area: ${error}`);
