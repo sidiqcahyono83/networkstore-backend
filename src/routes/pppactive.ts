@@ -2,10 +2,13 @@ import { Hono } from "hono";
 export const app = new Hono();
 
 const urlphp = process.env.PHP_API;
+const apiphp = "http://192.168.4.5";
 
 app.get("/active", async (c) => {
   try {
-    const result = await fetch(`${urlphp}/pppactive.php`);
+    // const result = await fetch(`${urlphp}/pppactive.php`);
+    const apiphp = "http://192.168.4.5";
+    const result = await fetch(`${apiphp}/pppactive.php`);
 
     if (!result.ok) {
       throw new Error(`Error! status: ${result.status}`);
@@ -25,7 +28,7 @@ app.get("/active", async (c) => {
 
 app.get("/secret", async (c) => {
   try {
-    const result = await fetch(`${urlphp}/pppSecret.php`);
+    const result = await fetch(`${apiphp}/pppSecret.php`);
 
     if (!result.ok) {
       throw new Error(`Error! status: ${result.status}`);
@@ -45,7 +48,7 @@ app.get("/secret", async (c) => {
 
 app.get("/nonactive", async (c) => {
   try {
-    const result = await fetch(`${urlphp}/nonactive.php`);
+    const result = await fetch(`${apiphp}/nonactive.php`);
 
     if (!result.ok) {
       throw new Error(`Error! status: ${result.status}`);
@@ -80,7 +83,7 @@ app.post("/createppp", async (c) => {
     }
 
     // Kirim request untuk membuat user baru
-    const createResult = await fetch(`${urlphp}/creatpppoe.php`, {
+    const createResult = await fetch(`${apiphp}/creatpppoe.php`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -113,7 +116,7 @@ app.post("/disableppp", async (c) => {
     }
 
     // Kirim request ke PHP API untuk menonaktifkan user
-    const result = await fetch(`${urlphp}/disablepppoe.php/`, {
+    const result = await fetch(`${apiphp}/disablepppoe.php/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

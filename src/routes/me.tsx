@@ -1,8 +1,9 @@
 import { Hono } from "hono";
 
-import prisma from "../lib/prisma";
+
 import { checkUserToken } from "../midleware/cekUserToken";
 import { HonoApp } from "../index";
+import prisma from "../lib/prisma";
 
 const app = new Hono<HonoApp>();
 
@@ -10,7 +11,8 @@ const app = new Hono<HonoApp>();
 app.get("/", checkUserToken(), async (c, next) => {
   const user = c.get("user");
 
-  const userData = await prisma.user.findUnique({
+  
+  const userData = await prisma.customer.findUnique({
     where: { id: user.id },
     select: {
       id: true,

@@ -33,13 +33,14 @@ app.get("/", (c) => {
     usersURL: "/users",
     cartURL: "/users/area/:areaName",
     customersUrl: "/customers",
+    ppp: "/ppp/active"
   });
 });
 
 app.route("/users", userRoute);
 app.route("/auth/register", registerRoute);
 app.route("/auth/login", loginRoute);
-app.route("/auth/me", meRoute);
+app.route("/auth/login/me", loginRoute);
 app.route("/area", areaRoute);
 app.route("/customers", customersRoute);
 app.route("/pembayaran", pembayarantRoute);

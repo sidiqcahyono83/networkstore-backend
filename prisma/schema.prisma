@@ -8,49 +8,53 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(cuid())
-  username    String    @unique
-  password    Password?
+  id          String        @id @default(cuid())
+  username    String        @unique
   fullname    String?
   address     String?
   phoneNumber String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  Area       Area[]
-  Modem      Modem[]
-  pembayaran Pembayaran[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  password    Password?
+  pembayaran  Pembayaran[]
+  Pengeluaran Pengeluaran[]
+  Area        Area[]        @relation("AreaToUser")
+  Modem       Modem[]       @relation("ModemToUser")
 }
 
 model Password {
   id     String @id @default(cuid())
   hash   String
-  use    User   @relation(fields: [userId], references: [id])
   userId String @unique
+  use    User   @relation(fields: [userId], references: [id])
 }
 
 model Customer {
-  id          String  @id @default(cuid())
-  username    String? @unique
+  id          String       @id @default(cuid())
+  username    String?      @unique
   fullname    String?
   address     String?
   phonenumber String?
   ontName     String?
   redamanOlt  String?
-  diskon      Int     @default(0)
-  ppn         Int?    @default(0)
+  diskon      Int          @default(0)
+  ppn         Int?         @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  paketId     String?
+  areaId      String?
+  odpId       String?
+  modemId     String?
+  area        Area?        @relation(fields: [areaId], references: [id])
+  modem       Modem?       @relation(fields: [modemId], references: [id])
+  odp         Odp?         @relation(fields: [odpId], references: [id])
+  paket       Paket?       @relation(fields: [paketId], references: [id])
+  pembayaran  Pembayaran[]
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  paket      Paket?       @relation(fields: [paketId], references: [id])
-  paketId    String?
-  area       Area?        @relation(fields: [areaId], references: [id])
-  areaId     String?
-  odp        Odp?         @relation(fields: [odpId], references: [id])
-  odpId      String?
-  modem      Modem?       @relation(fields: [modemId], references: [id])
-  modemId    String?
-  pembayaran Pembayaran[]
+  @@index([areaId], map: "Customer_areaId_fkey")
+  @@index([modemId], map: "Customer_modemId_fkey")
+  @@index([odpId], map: "Customer_odpId_fkey")
+  @@index([paketId], map: "Customer_paketId_fkey")
 }
 
 model Paket {
@@ -69,7 +73,7 @@ model Area {
   updatedAt DateTime   @updatedAt
   customer  Customer[]
   odp       Odp[]
-  user      User[]
+  user      User[]     @relation("AreaToUser")
 }
 
 model Odp {
@@ -79,37 +83,62 @@ model Odp {
   pasiveSpliter String?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
-  customer      Customer[]
-  area          Area?      @relation(fields: [areaId], references: [id], onDelete: Cascade)
   areaId        String?
+  customer      Customer[]
+  area          Area?      @relation(fields: [areaId], references: [id])
+
+  @@index([areaId], map: "Odp_areaId_fkey")
 }
 
 model Modem {
-  id     String @id @default(cuid())
-  name   String
-  serial String @unique
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  orderBy  User[]
-  customer Customer[]
+  id        String     @id @default(cuid())
+  name      String
+  serial    String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  customer  Customer[]
+  orderBy   User[]     @relation("ModemToUser")
 }
 
 model Pembayaran {
-  id      String   @id @default(cuid())
-  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId  String
-  periode DateTime @default(now())
+  id           String      @id @default(cuid())
+  userId       String
+  periode      DateTime    @default(now())
+  metode       String      @default("Cash")
+  totalBayar   Float
+  customerId   String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  pendapatanId String?
+  customer     Customer    @relation(fields: [customerId], references: [id])
+  Pendapatan   Pendapatan? @relation(fields: [pendapatanId], references: [id])
+  user         User        @relation(fields: [userId], references: [id])
 
-  metode     String @default("Cash")
-  totalBayar Float
+  @@index([customerId], map: "Pembayaran_customerId_fkey")
+  @@index([pendapatanId], map: "Pembayaran_pendapatanId_fkey")
+  @@index([userId], map: "Pembayaran_userId_fkey")
+}
 
-  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  customerId String
+model Pendapatan {
+  id         String       @id
+  totalMasuk Int
+  deskripsi  String?
+  metode     String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime
+  Pembayaran Pembayaran[]
+}
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Pengeluaran {
+  id          String   @id
+  userId      String
+  totalKeluar Float
+  deskripsi   String?
+  tanggal     DateTime @default(now())
+  kategori    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  User        User     @relation(fields: [userId], references: [id])
 
-  @@unique([userId, periode, customerId])
+  @@index([userId], map: "Pengeluaran_userId_fkey")
 }

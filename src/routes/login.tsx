@@ -67,15 +67,21 @@ app.post(
 );
 
 //auth/me
-app.get("/auth/me", checkUserToken(), async (c, next) => {
+app.get("/me", checkUserToken(), async (c, next) => {
   const user = c.get("user");
   const userData = await prisma.user.findUnique({
     where: { id: user.id },
     select: {
       id: true,
       username: true,
+      phoneNumber: true,
       createdAt: true,
       updatedAt: true,
+      _count: {
+        select: {
+          Area: true,
+        },
+      },
     },
   });
 
